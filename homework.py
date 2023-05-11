@@ -53,6 +53,7 @@ class Training:
                            self.get_spent_calories())
 
 
+@dataclass
 class Running(Training):
     """Тренировка: бег."""
     CALORIES_MEAN_SPEED_MULTIPLIER = 18.0
@@ -60,7 +61,7 @@ class Running(Training):
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        spent_calories: float = (
+        return (
             (
                 self.CALORIES_MEAN_SPEED_MULTIPLIER
                 * self.get_mean_speed()
@@ -71,7 +72,6 @@ class Running(Training):
             * self.duration
             * self.MIN_IN_HOUR
         )
-        return spent_calories
 
 
 @dataclass
@@ -85,7 +85,7 @@ class SportsWalking(Training):
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        spent_calories: float = (
+        return (
             (
                 (
                     self.CALORIES_MEAN_WEIGHT_MULTIPLIER
@@ -107,7 +107,6 @@ class SportsWalking(Training):
                 * self.MIN_IN_HOUR
             )
         )
-        return spent_calories
 
 
 @dataclass
@@ -128,7 +127,7 @@ class Swimming(Training):
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        spent_calories: float = (
+        return (
             (
                 self.get_mean_speed()
                 + self.CALORIES_MEAN_SPEED_MULTIPLIER
@@ -137,21 +136,20 @@ class Swimming(Training):
             * self.weight
             * self.duration
         )
-        return spent_calories
 
 
 def read_package(workout_type: str, data: list[int]) -> Training:
     """Прочитать данные полученные от датчиков."""
-    my_dict: dict[str: type[Training]] = {
+    workouts_alphabet: dict[str: type[Training]] = {
         'SWM': Swimming,
         'RUN': Running,
         'WLK': SportsWalking
     }
-    workout_types = " / ".join(my_dict.keys())
-    if workout_type in my_dict:
-        return my_dict[workout_type](*data)
-    raise ValueError(f'{workout_type} - неизвестный тип тренеровки. '
-                     f'Коды доступных видов тренеровок: {workout_types}')
+    if workout_type not in workouts_alphabet:
+        workout_types = ' / '.join(workouts_alphabet.keys())
+        raise ValueError(f'{workout_type} - неизвестный тип тренеровки. '
+                         f'Коды доступных видов тренеровок: {workout_types}')
+    return workouts_alphabet[workout_type](*data)
 
 
 def main(training: Training) -> None:
