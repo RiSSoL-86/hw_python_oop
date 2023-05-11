@@ -146,7 +146,7 @@ def read_package(workout_type: str, data: list[int]) -> Training:
         'WLK': SportsWalking
     }
     if workout_type not in workouts_alphabet:
-        workout_types = " / ".join(workouts_alphabet.keys())
+        workout_types = ' / '.join(workouts_alphabet.keys())
         raise ValueError(f'{workout_type} - неизвестный тип тренеровки. '
                          f'Коды доступных видов тренеровок: {workout_types}')
     return workouts_alphabet[workout_type](*data)
