@@ -61,17 +61,9 @@ class Running(Training):
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        return (
-            (
-                self.CALORIES_MEAN_SPEED_MULTIPLIER
-                * self.get_mean_speed()
-                + self.CALORIES_MEAN_SPEED_SHIFT
-            )
-            * self.weight
-            / self.M_IN_KM
-            * self.duration
-            * self.MIN_IN_HOUR
-        )
+        return ((self.CALORIES_MEAN_SPEED_MULTIPLIER * self.get_mean_speed()
+                + self.CALORIES_MEAN_SPEED_SHIFT) * self.weight
+                / self.M_IN_KM * self.duration * self.MIN_IN_HOUR)
 
 
 @dataclass
@@ -85,28 +77,11 @@ class SportsWalking(Training):
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        return (
-            (
-                (
-                    self.CALORIES_MEAN_WEIGHT_MULTIPLIER
-                    * self.weight
-                    + (
-                        (
-                            self.get_mean_speed()
-                            * self.KMH_IN_MS
-                        )**2
-                        / (
-                            self.height
-                            / self.CM_IN_M
-                        )
-                    )
-                    * self.CALORIES_MEAN_WEIGHT_SHIFT
-                    * self.weight
-                )
-                * self.duration
-                * self.MIN_IN_HOUR
-            )
-        )
+        return (((self.CALORIES_MEAN_WEIGHT_MULTIPLIER * self.weight
+                + ((self.get_mean_speed() * self.KMH_IN_MS)**2
+                 / (self.height / self.CM_IN_M))
+                * self.CALORIES_MEAN_WEIGHT_SHIFT * self.weight)
+                * self.duration * self.MIN_IN_HOUR))
 
 
 @dataclass
@@ -127,29 +102,20 @@ class Swimming(Training):
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        return (
-            (
-                self.get_mean_speed()
-                + self.CALORIES_MEAN_SPEED_MULTIPLIER
-            )
-            * self.CALORIES_MEAN_WEIGHT_SHIFT
-            * self.weight
-            * self.duration
-        )
+        return ((self.get_mean_speed() + self.CALORIES_MEAN_SPEED_MULTIPLIER)
+                * self.CALORIES_MEAN_WEIGHT_SHIFT * self.weight
+                * self.duration)
 
 
 def read_package(workout_type: str, data: list[int]) -> Training:
     """Прочитать данные полученные от датчиков."""
-    workouts_alphabet: dict[str: type[Training]] = {
-        'SWM': Swimming,
-        'RUN': Running,
-        'WLK': SportsWalking
-    }
-    if workout_type not in workouts_alphabet:
-        workout_types = ' / '.join(workouts_alphabet.keys())
-        raise ValueError(f'{workout_type} - неизвестный тип тренеровки. '
-                         f'Коды доступных видов тренеровок: {workout_types}')
-    return workouts_alphabet[workout_type](*data)
+    if workout_type == 'SWM':
+        return Swimming(*data)
+    elif workout_type == 'RUN':
+        return Running(*data)
+    elif workout_type == 'WLK':
+        return SportsWalking(*data)
+    return 'Неизвестный тип тренеровки'
 
 
 def main(training: Training) -> None:
